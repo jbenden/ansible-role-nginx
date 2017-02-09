@@ -1,7 +1,4 @@
 ---
-- name: Update pkg cache.
-  shell: pkg update -f
-
 - name: Ensure nginx is installed.
   pkgng:
     name: "{{ nginx_package_name }}"
@@ -10,4 +7,7 @@
 - name: Create logs directory.
   file:
     path: /var/log/nginx
+    mode: 0750
+    owner: "{{ __nginx_user }}"
+    group: "{{ root_group }}"
     state: directory
