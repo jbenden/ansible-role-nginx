@@ -16,7 +16,7 @@
   template:
     src: vhosts.j2
     dest: "{{ nginx_vhost_path }}/{{ nginx_vhosts_filename }}"
-    mode: 0644
+    mode: 0640
   when: nginx_vhosts|length > 0
   notify: reload nginx
 
