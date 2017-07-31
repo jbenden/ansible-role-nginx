@@ -8,6 +8,9 @@ worker_rlimit_nofile {{ (nginx_worker_connections|float * 2.42)|int }};
 
 events {
     worker_connections  {{ nginx_worker_connections }};
+{% if nginx_events_use is defined %}
+    use {{ nginx_events_use }};
+{% endif %}
     multi_accept {{ nginx_multi_accept }};
 }
 
