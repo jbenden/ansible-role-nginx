@@ -4,6 +4,7 @@ error_log  {{ nginx_error_log }};
 pid        {{ nginx_pidfile }};
 
 worker_processes  {{ nginx_worker_processes }};
+worker_rlimit_nofile {{ (nginx_worker_connections|float * 2.42)|int }};
 
 events {
     worker_connections  {{ nginx_worker_connections }};

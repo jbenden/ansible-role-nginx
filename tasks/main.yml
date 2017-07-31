@@ -38,5 +38,16 @@
   notify:
     - reload nginx
 
+- name: ensure default fd maximum is correct for Nginx
+  lineinfile:
+    dest: /etc/default/nginx
+    create: no
+    state: present
+    line: "ULIMIT=\"-n 4096\""
+    regexp: "^#?ULIMIT="
+  when: ansible_os_family == 'Debian'
+  notify:
+    - reload nginx
+
 - name: Ensure nginx is started and enabled to start at boot.
   service: name=nginx state=started enabled=yes
