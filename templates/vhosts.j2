@@ -1,6 +1,8 @@
 {% for vhost in nginx_vhosts %}
 server {
-    listen {{ vhost.listen | default('80 default_server') }};
+{% for listen in vhost.listen | default(['80 default_server']) | list %}
+    listen {{ listen }};
+{% endfor %}
 
 {% if vhost.server_name is defined %}
     server_name {{ vhost.server_name }};
