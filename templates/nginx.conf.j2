@@ -11,7 +11,9 @@ events {
 {% if nginx_events_use is defined %}
     use {{ nginx_events_use }};
 {% endif %}
+{% if nginx_multi_accept is defined %}
     multi_accept {{ nginx_multi_accept }};
+{% endif %}
 }
 
 {% if nginx_extra_conf_options %}
