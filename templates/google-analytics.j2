@@ -1,0 +1,51 @@
+# Номер нашего счетчика и основного домена
+#
+# http://developers-club.com/posts/260553/
+set $gaID '{{ item.google_analytics_ua }}';
+set $mainDomain '{{ item.google_analytics_domain }}';
+
+# Пробрасываем ClientID через cookie "_ga_cid"
+# Важно, чтобы cookie была установлена для всех субдоменов
+set $cid $cookie__ga_cid;
+if ($cid = '') {
+    set $cid "$request_time$request_length.$msec$connection";
+}
+add_header Set-Cookie "_ga_cid=$cid; path=/; domain=.$mainDomain" always;
+
+set $postURI $uri;
+set $postRequestURI $request_uri;
+set $postIP $remote_addr;
+set $postHOST $host;
+
+# Отправка события pageview
+location @GAlog {
+    resolver 8.8.8.8 ipv6=off
+    internal;
+
+    proxy_ignore_client_abort on;
+    proxy_next_upstream timeout;
+
+    proxy_pass http://google-analytics.com/collect?v=1&dh=$postHOST&dt=$postHOST&tid=$gaID&cid=$cid&cd1=$cid&uip=$postIP&cd2=$request_time&cd3=$body_bytes_sent&t=pageview&dp=$postURI;
+}
+
+# Отправка события 404
+location @GAlog404 {
+    resolver 8.8.8.8 ipv6=off;
+    internal;
+
+    proxy_ignore_client_abort on;
+    proxy_next_upstream timeout;
+
+    proxy_pass http://google-analytics.com/collect?v=1&tid=$gaID&cid=$cid&cd1=$cid&uip=$postIP&t=event&el=nginx&ec=404&ea=$postHOST$postRequestURI;
+}
+
+# Отправка события 500
+location @GAlog500 {
+    resolver 8.8.8.8 ipv6=off;
+    internal;
+
+    proxy_ignore_client_abort on;
+    proxy_next_upstream timeout;
+
+    proxy_pass http://google-analytics.com/collect?v=1&tid=$gaID&cid=$cid&cd1=$cid&uip=$postIP&t=event&el=nginx&ec=500&ea=$postHOST$postRequestURI;
+}

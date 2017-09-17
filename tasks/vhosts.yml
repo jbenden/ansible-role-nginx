@@ -12,6 +12,17 @@
     state: directory
   notify: reload nginx
 
+- name: Ensure Google Analytics configuration is present
+  template:
+    src: "google-analytics.j2"
+    dest: "{{ nginx_conf_base_path }}/google-analytics_{{ item.google_analytics_ua }}_{{ item.google_analytics_domain }}"
+    mode: 0640
+  when:
+    - "item.google_analytics is defined"
+    - "item.google_analytics | bool"
+  with_items: "{{ nginx_vhosts | default([]) | list }}"
+  notify: reload nginx
+
 - name: Add managed vhost config file (if any vhosts are configured).
   template:
     src: vhosts.j2

@@ -1,5 +1,9 @@
 {% for vhost in nginx_vhosts %}
 server {
+{% if vhost.google_analytics is defined and vhost.google_analytics|bool %}
+    include google-analytics_{{ vhost.google_analytics_ua }}_{{ vhost.google_analytics_domain }};
+{% endif %}
+
 {% for listen in vhost.listen | default(['80 default_server']) | list %}
     listen {{ listen }};
 {% endfor %}
